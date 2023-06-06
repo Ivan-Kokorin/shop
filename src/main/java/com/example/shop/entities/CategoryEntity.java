@@ -11,14 +11,9 @@ import java.util.List;
 @Table(name = "product_category")
 public class CategoryEntity {
     @Id
-    @Column
-    @GenericGenerator(name = "generator", strategy = "increment")
-    @GeneratedValue(generator = "generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @Column
     String title;
-
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<AdditionalPropertyEntity> properties;
 }

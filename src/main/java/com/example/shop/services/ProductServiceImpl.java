@@ -3,13 +3,18 @@ package com.example.shop.services;
 import com.example.shop.dto.ProductDto;
 import com.example.shop.entities.ProductEntity;
 import com.example.shop.repositories.ProductRepository;
+import com.example.shop.utils.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Transactional
+@Service
 public class ProductServiceImpl implements ProductService {
     private final ModelMapper modelMapper;
     private final ProductRepository productRepository;
@@ -22,22 +27,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto save(ProductDto productDto) {
-        ProductEntity productEntity = modelMapper.map(productDto, ProductEntity.class);
-        Long idProd = productEntity.getId();
-        if (isExist(idProd)) {
-            ProductEntity saveProduct = productRepository.save(productEntity);
-            return modelMapper.map(saveProduct, ProductDto.class);
-        } else {
-            return new ProductDto();
-        }
-
+        ProductEntity productEntity = ObjectMapper.toProductEntity(productDto);
+        ProductEntity save = productRepository.save(productEntity);
+        return productDto;
     }
 
     @Override
     public void saveAll(List<ProductDto> productDtos) {
-        for (ProductDto productDto : productDtos) {
-            save(productDto);
-        }
+        productDtos.forEach(this::save);
     }
 
     @Override
@@ -52,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> getAllProductCategory(Long idCategory) {
-        List<ProductEntity> products = productRepository.findByCategory(idCategory);
+        List<ProductEntity> products = productRepository.findByCategory_Id(idCategory);
         return products.stream().map(this::toProductDto).collect(Collectors.toList());
     }
 

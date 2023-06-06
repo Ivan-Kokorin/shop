@@ -10,15 +10,13 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "additional_property")
 public class AdditionalPropertyEntity {
     @Id
-    @Column
-    @GenericGenerator(name = "generator", strategy = "increment")
-    @GeneratedValue(generator = "generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @Column
     String title;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_category")
     CategoryEntity category;
 }

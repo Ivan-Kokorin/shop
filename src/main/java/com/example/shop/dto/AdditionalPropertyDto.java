@@ -1,11 +1,11 @@
 package com.example.shop.dto;
 
-import com.example.shop.entities.CategoryEntity;
+import com.example.shop.entities.PropertyValuePk;
+import lombok.Data;
 
+@Data
 public class AdditionalPropertyDto {
-    Long id;
+    Long idProperty;
 
-    String title;
-
-    CategoryEntity category;
+    String valueProp;
 }

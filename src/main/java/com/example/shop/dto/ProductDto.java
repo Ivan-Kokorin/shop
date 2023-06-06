@@ -2,16 +2,18 @@ package com.example.shop.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class ProductDto {
-    Long id;
-
-    String number_serial;
+    String numberSerial;
 
     String brand;
 
     int price;
     int amount;
 
-    CategoryDto category;
+    Long idCategory;
+
+    List<AdditionalPropertyDto> properties;
 }
