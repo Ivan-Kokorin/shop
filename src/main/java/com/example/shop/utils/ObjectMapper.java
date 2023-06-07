@@ -12,19 +12,20 @@ import java.util.List;
 public class ObjectMapper {
     public static ProductEntity toProductEntity(ProductDto productDto) {
 //        {
-//            "numberSerial" : "id-SSD-12345",
-//                "brand" : "WD",
-//                "price" : 7300,
-//                "amount" : 54,
-//                "category" : {
-//            "id" : 2
-//        },
-//            "properties" : [ {
-//            "propertyValuePk" : {
-//                "idProperty" : {"id" : 1},
-//                "idProduct" : {"numberSerial" : "id-SSD-12345"}
-//            },
-//            "valueProp" : "512 Gb"
+//            "numberSerial" : "id-NoteBook-66611",
+//                "brand" : "Asus",
+//                "price" : 90000,
+//                "amount" : 18,
+//                "idCategory" : 7,
+//                "properties" : [ {
+//            "idProperty" : 6,
+//                    "valueProp" : "17'"
+//        }, {
+//            "idProperty" : 7,
+//                    "valueProp" : "sensor"
+//        },{
+//            "idProperty" : 5,
+//                    "valueProp" : "GPU"
 //        } ]
 //        }
         ProductEntity productEntity = new ProductEntity();
@@ -52,7 +53,26 @@ public class ObjectMapper {
             propertyValueEntities.add(propertyValue);
         }
         productEntity.setProperties(propertyValueEntities);
-        System.out.println("Product entity :" + productEntity);
         return productEntity;
+    }
+
+    public static ProductDto toProductDto(ProductEntity productEntity) {
+        ProductDto productDto = new ProductDto();
+        productDto.setNumberSerial(productEntity.getNumberSerial());
+        productDto.setBrand(productEntity.getBrand());
+        productDto.setPrice(productEntity.getPrice());
+        productDto.setAmount(productEntity.getAmount());
+        productDto.setIdCategory(productEntity.getCategory().getId());
+
+        ArrayList<AdditionalPropertyDto> additionalPropertyDtos = new ArrayList<>();
+        List<PropertyValueEntity> properties = productEntity.getProperties();
+        for (PropertyValueEntity propertyEntity : properties) {
+            AdditionalPropertyDto propertyDto = new AdditionalPropertyDto();
+            propertyDto.setValueProp(propertyEntity.getValueProp());
+            propertyDto.setIdProperty(propertyEntity.getPropertyValuePk().getIdProperty().getId());
+            additionalPropertyDtos.add(propertyDto);
+        }
+        productDto.setProperties(additionalPropertyDtos);
+        return productDto;
     }
 }

@@ -5,17 +5,17 @@ import com.example.shop.entities.ProductEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public interface ProductService {
-    public ProductDto save(ProductDto productDto);
+    public String save(ProductDto productDto);
+    public String update(ProductDto productDto);
 
     public void saveAll(List<ProductDto> productDtos);
 
-    public boolean isExist(Long id);
+    public boolean isExist(String id);
 
-    public Optional<ProductEntity> getProductById(Long id);
+    public ProductDto getProductById(String id);
 
     public List<ProductDto> getAllProductCategory(Long idCategory);
 }
