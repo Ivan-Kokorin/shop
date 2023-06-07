@@ -3,14 +3,11 @@ package com.example.shop.controllers;
 import com.example.shop.dto.ProductDto;
 import com.example.shop.services.ProductService;
 import lombok.extern.slf4j.Slf4j;
-import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 import java.util.List;
-import java.util.NoSuchElementException;
-
 @Slf4j
 @RestController
 @RequestMapping("/products")
@@ -57,8 +54,8 @@ public class ProductController {
     }
 
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(PSQLException.class)
-    public Response handleSqlException(PSQLException e) {
+    @ExceptionHandler(JdbcSQLIntegrityConstraintViolationException.class)
+    public Response handleSqlException(JdbcSQLIntegrityConstraintViolationException e) {
         return new Response(e.getMessage());
     }
 }
