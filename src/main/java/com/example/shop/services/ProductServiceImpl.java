@@ -28,9 +28,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public String save(ProductDto productDto){
+    public String save(ProductDto productDto) {
         ProductEntity productEntity = ObjectMapper.toProductEntity(productDto);
-        if(isExist(productEntity.getNumberSerial())) {
+        if (isExist(productEntity.getNumberSerial())) {
             throw new MyInternalServerException("This product already exist");
         } else {
             productRepository.save(productEntity);
@@ -41,13 +41,36 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public String update(ProductDto productDto) {
         ProductEntity productEntity = ObjectMapper.toProductEntity(productDto);
-        if(isExist(productEntity.getNumberSerial())) {
-            System.out.println("Product id is " + productEntity.getNumberSerial() + " " + isExist(productEntity.getNumberSerial()));
+        if (isExist(productEntity.getNumberSerial())) {
+            ProductEntity productEntityById = productRepository.findById(productEntity.getNumberSerial()).get();
+            System.out.println("Product from DB: " + productEntityById);
+            System.out.println("Product from DTO: " + productEntity);
+            productEntity = enrichmentDtoEntity(productEntity, productEntityById);
+            System.out.println("Product arter enrichment: " + productEntity);
             productRepository.save(productEntity);
             return RequestStatus.OK.getStatus() + " successful update product";
         } else {
             throw new MyResourceNotFoundException("The product with this id was not found");
         }
+    }
+
+    private ProductEntity enrichmentDtoEntity(ProductEntity productEntity, ProductEntity productEntityById) {
+        if (productEntity.getAmount() == 0) {
+            productEntity.setAmount(productEntityById.getAmount());
+        }
+        if (productEntity.getBrand() == null || productEntity.getBrand().equals("")) {
+            productEntity.setBrand(productEntityById.getBrand());
+        }
+        if (productEntity.getPrice() == 0) {
+            productEntity.setPrice(productEntityById.getPrice());
+        }
+        if (productEntity.getCategory().getId() == null) {
+            productEntity.setCategory(productEntityById.getCategory());
+        }
+        if (productEntity.getProperties() == null) {
+            productEntity.setProperties(productEntityById.getProperties());
+        }
+        return productEntity;
     }
 
     @Override
@@ -61,9 +84,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto getProductById(String id){
+    public ProductDto getProductById(String id) {
         Optional<ProductEntity> optionalProductEntity = productRepository.findById(id);
-        if(optionalProductEntity.isPresent()) {
+        if (optionalProductEntity.isPresent()) {
             return ObjectMapper.toProductDto(optionalProductEntity.get());
         } else {
             throw new MyResourceNotFoundException("The product with this id was not found");
@@ -72,7 +95,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> getAllProductCategory(Long idCategory) {
-        if(categoryService.isExist(idCategory)) {
+        if (categoryService.isExist(idCategory)) {
             List<ProductEntity> products = productRepository.findByCategory_Id(idCategory);
             return products.stream().map(ObjectMapper::toProductDto).collect(Collectors.toList());
         } else {

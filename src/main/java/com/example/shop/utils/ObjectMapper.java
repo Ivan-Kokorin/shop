@@ -11,23 +11,6 @@ import java.util.List;
 @Component
 public class ObjectMapper {
     public static ProductEntity toProductEntity(ProductDto productDto) {
-//        {
-//            "numberSerial" : "id-NoteBook-66611",
-//                "brand" : "Asus",
-//                "price" : 90000,
-//                "amount" : 18,
-//                "idCategory" : 7,
-//                "properties" : [ {
-//            "idProperty" : 6,
-//                    "valueProp" : "17'"
-//        }, {
-//            "idProperty" : 7,
-//                    "valueProp" : "sensor"
-//        },{
-//            "idProperty" : 5,
-//                    "valueProp" : "GPU"
-//        } ]
-//        }
         ProductEntity productEntity = new ProductEntity();
         productEntity.setNumberSerial(productDto.getNumberSerial());
         productEntity.setBrand(productDto.getBrand());
@@ -40,19 +23,21 @@ public class ObjectMapper {
 
         ArrayList<PropertyValueEntity> propertyValueEntities = new ArrayList<>();
         List<AdditionalPropertyDto> propertiesDto = productDto.getProperties();
-        for (AdditionalPropertyDto propertyDto : propertiesDto) {
-            PropertyValueEntity propertyValue = new PropertyValueEntity();
-            propertyValue.setValueProp(propertyDto.getValueProp());
-            PropertyValuePk propertyValuePk = new PropertyValuePk();
-            AdditionalPropertyEntity additionalPropertyEntity = new AdditionalPropertyEntity();
-            additionalPropertyEntity.setId(propertyDto.getIdProperty());
-            additionalPropertyEntity.setCategory(categoryEntity);
-            propertyValuePk.setIdProperty(additionalPropertyEntity);
-            propertyValuePk.setIdProduct(productEntity);
-            propertyValue.setPropertyValuePk(propertyValuePk);
-            propertyValueEntities.add(propertyValue);
+        if (propertiesDto != null) {
+            for (AdditionalPropertyDto propertyDto : propertiesDto) {
+                PropertyValueEntity propertyValue = new PropertyValueEntity();
+                propertyValue.setValueProp(propertyDto.getValueProp());
+                PropertyValuePk propertyValuePk = new PropertyValuePk();
+                AdditionalPropertyEntity additionalPropertyEntity = new AdditionalPropertyEntity();
+                additionalPropertyEntity.setId(propertyDto.getIdProperty());
+                additionalPropertyEntity.setCategory(categoryEntity);
+                propertyValuePk.setIdProperty(additionalPropertyEntity);
+                propertyValuePk.setIdProduct(productEntity);
+                propertyValue.setPropertyValuePk(propertyValuePk);
+                propertyValueEntities.add(propertyValue);
+            }
+            productEntity.setProperties(propertyValueEntities);
         }
-        productEntity.setProperties(propertyValueEntities);
         return productEntity;
     }
 
@@ -66,13 +51,15 @@ public class ObjectMapper {
 
         ArrayList<AdditionalPropertyDto> additionalPropertyDtos = new ArrayList<>();
         List<PropertyValueEntity> properties = productEntity.getProperties();
-        for (PropertyValueEntity propertyEntity : properties) {
-            AdditionalPropertyDto propertyDto = new AdditionalPropertyDto();
-            propertyDto.setValueProp(propertyEntity.getValueProp());
-            propertyDto.setIdProperty(propertyEntity.getPropertyValuePk().getIdProperty().getId());
-            additionalPropertyDtos.add(propertyDto);
+        if (properties != null || !properties.isEmpty()) {
+            for (PropertyValueEntity propertyEntity : properties) {
+                AdditionalPropertyDto propertyDto = new AdditionalPropertyDto();
+                propertyDto.setValueProp(propertyEntity.getValueProp());
+                propertyDto.setIdProperty(propertyEntity.getPropertyValuePk().getIdProperty().getId());
+                additionalPropertyDtos.add(propertyDto);
+            }
+            productDto.setProperties(additionalPropertyDtos);
         }
-        productDto.setProperties(additionalPropertyDtos);
         return productDto;
     }
 }
